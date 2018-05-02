@@ -25,13 +25,13 @@ hxb2    RT      248     E      K       af0.01  0.0022    1394     RC=gaa;AC=Aaa;
 
 ### 1.2 Meta-information lines
 
-File meta-information is included after the ## string and must be key=value pairs. It is strongly encouraged that information lines describing the INFO, FILTER and FORMAT entries used in the body of the AAVF file be included in the meta-information section. Although they are optional, if these lines are present then they must be completely well-formed.
+File meta-information is included after the ## string and must be key=value pairs. It is strongly encouraged that information lines describing the INFO and FILTER entries used in the body of the AAVF file be included in the meta-information section. Although they are optional, if these lines are present then they must be completely well-formed.
 
 #### 1.2.1 File format
 
 A single 'fileformat' field is always required, must be the first line in the file, and details the AAVF format version number. For example, for AAVF version 1.0, this line should read:
 ```
-##fileformat=AAVF=v1.0
+##fileformat=AAVFv1.0
 ```
 #### 1.2.2 Information field format
 
@@ -45,7 +45,7 @@ Possible Types for INFO fields are: Integer, Float, Flag, Character, and String.
 
   * If the number of possible values varies, is unknown, or is unbounded, then this value should be '.'.
 
-The 'Flag' type indicates that the INFO field does not contain a Value entry, and hence the Number should be 0 in this case. The Description value must be surrounded by double-qoutes. Double-qoute character can be escaped with backslash \ and backslash as \\. Source and Version values likewise should be surrounded by double-quotes and specify the annotation source (case-insenstive, e.g. "sdrm") and exact version (e.g. "2009"), respectively for computational use.
+The 'Flag' type indicates that the INFO field does not contain a Value entry, and hence the Number should be 0 in this case. The Description value must be surrounded by double-quotes. Double-quote character can be escaped with backslash \ and backslash as \\. Source and Version values likewise should be surrounded by double-quotes and specify the annotation source (case-insenstive, e.g. "sdrm") and exact version (e.g. "2009"), respectively for computational use.
 
 #### 1.2.3 Filter field format
 
@@ -55,7 +55,7 @@ FILTERs that have been applied to the data should be described as follows:
 ##FILTER=<ID=ID,Description="description">
 ```
 
-### 1.3 Header line synta
+### 1.3 Header line syntax
 
 The header line names the 9 fixed, mandatory columns. These columns are as follows:
 
@@ -86,7 +86,7 @@ There are 9 fixed fields per record. All data lines are tab-delimited. In all ca
   9. INFO - additional information: (String, no white-space, semi-colons, or equals-signs permitted; commas are permitted only as delimiters for list of values) INFO fields are encoded as a semicolon-separated series of short keys with optional values in the format: `<key>=<data>[,data]`. Arbitrary keys are permitted, although the following sub-fields are reserved (albeit optional):
      * RC : reference codon, the codon that makes up the REF amino acid(s).
      * AC : alternate codon, the codon that makes up the ALT amino acid(s).
-     * ACC : alternate codon count, for each alternate codon, in the same order as listed
+     * ACC : alternate codon count (number of reads containing that codon) for each alternate codon, in the same order as listed
      * ACF : alternate codon frequency, for each alternate codon, in the same order as listed
 
 ## 2 Understanding the AAVF format
@@ -120,7 +120,7 @@ my_chrom  a       3       K      K       PASS    0.95      1000     RC=aaa;AC=aa
 my_chrom  a       3       K      N       PASS    0.05      1000     RC=aaa;AC=aaT;ACF=0.05
 ```
 
-### 3.2 Decoding AAVF entries for Synonmous and Non-synonymous mutations
+### 3.2 Decoding AAVF entries for Synonymous and Non-synonymous mutations
 
 #### 3.2.1 Synonymous mutation AAVF record
 
@@ -153,7 +153,7 @@ This is a non-synonymous mutation since the alt amino acid differs from the refe
 | Example | Amino Acid Sequence | Nucleotide Sequence | Alteration                                               |
 |---------|--------------------:|--------------------:|----------------------------------------------------------|
 | Ref     |           g l k K s | gga ctc aaa AAA tcc | K is the reference amino acid                            |
-| 1       |           g l k I s | gga ctc aaa ATA tcc | K amino acid is a I, in a portion of the viri            |
+| 1       |           g l k I s | gga ctc aaa ATA tcc | K amino acid is a I, in a portion of the virus population|
 
 ### 3.3 Creating AAVF entries for Insertions and Deletions
 
@@ -176,7 +176,7 @@ Note: that the positions must be sorted in increasing order:
 
 ```
 #CHROM    GENE    POS     REF    ALT     FILTER  ALT_FREQ  COVERAGE INFO
-my_chrom  a       2       LK     L       PASS    0.5       1000     
+my_chrom  a       2       LK     L       PASS    0.5       1000     RC=ctcaaa;AC=ctc
 my_chrom  a       3       K      KK      PASS    0.5       1000     RC=aaa;AC=aaaaaa;ACF=0.5
 ```
 
@@ -191,12 +191,12 @@ Supposed I receive the following AAVF record:
 my_chrom  a       3       K      KK      PASS    0.5       1000     RC=aaa;AC=aaaaaa;ACF=0.5
 ```
 
-This is an insertion since the reference amino acid K is being replaced by K [the reference amino acid] plus one insertion amino acid K. Again there are only two alleles so I have the two following segrating haplotypes.
+This is an insertion since the reference amino acid K is being replaced by K [the reference amino acid] plus one insertion amino acid K in such a way that a gap is opened in the reference. Again there are only two alleles so I have the two following segrating haplotypes.
 
 | Example | Amino Acid Sequence | Nucleotide Sequence    | Alteration                                                |
 |---------|--------------------:|-----------------------:|-----------------------------------------------------------|
-| Ref     |           g l K k s |    gga ctc AAA aaa tcc | K is the reference amino acid                             |
-| 2       |           g l KKk s | gga ctc AAAAAA aaa tcc | K amino acid is inserted w.r.t. to the reference sequence |
+| Ref     |           g l K k s | gga ctc AAA --- aaa tcc | K is the reference amino acid                             |
+| 2       |           g l KKk s | gga ctc AAA AAA aaa tcc | K amino acid is inserted w.r.t. to the reference sequence |
 
 #### 3.4.2 Deletion AAVF record
 
@@ -204,10 +204,10 @@ Supposed I receive the following AAVF record:
 
 ```
 #CHROM    GENE    POS     REF    ALT     FILTER  ALT_FREQ  COVERAGE INFO
-my_chrom  a       2       LK     L       PASS    0.5       1000     
+my_chrom  a       2       LK     L       PASS    0.5       1000     RC=ctcaaa;AC=ctc
 ```
 
-This is a deleteion of one reference amino acids since the reference allele LK is being replaced by just the L [the reference amino acid]. Again there are only two alleles so I have the two followin segrating haplotypes.
+This is a deletion of one reference amino acid since the reference allele LK is being replaced by just the L [the reference amino acid]. Again there are only two alleles so I have the two following seggregating haplotypes.
 
 | Example | Amino Acid Sequence | Nucleotide Sequence    | Alteration                                                |
 |---------|--------------------:|-----------------------:|-----------------------------------------------------------|
