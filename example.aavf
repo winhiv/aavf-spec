@@ -1,5 +1,6 @@
 ##fileformat=AAVFv1.0
-##fileDate=myProgramV1.0
+##fileDate=20180501
+##source=myProgramV1.0
 ##reference=hxb2.fas
 ##INFO=<ID=RC,Number=1,Type=String,Description="Reference Codon">
 ##INFO=<ID=AC,Number=.,Type=String,Description="Alternate Codon">

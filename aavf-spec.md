@@ -7,7 +7,8 @@ AAVF is a text file format, inspired by the Variant Call Format (VCF) format. It
 ### 1.1 An example
 ```
 ##fileformat=AAVFv1.0
-##fileDate=myProgramV1.0
+##fileDate=20180501
+##source=myProgramV1.0
 ##reference=hxb2.fas
 ##INFO=<ID=RC,Number=1,Type=String,Description="Reference Codon">
 ##INFO=<ID=AC,Number=.,Type=String,Description="Alternate Codon">
@@ -24,22 +25,22 @@ hxb2    RT      248     E      K       af0.01  0.0022    1394     RC=gaa;AC=Aaa;
 ```
 
 ### 1.2 Meta-information lines
-
+ 
 File meta-information is included after the ## string and must be key=value pairs. It is strongly encouraged that information lines describing the INFO and FILTER entries used in the body of the AAVF file be included in the meta-information section. Although they are optional, if these lines are present then they must be completely well-formed.
 
 #### 1.2.1 File format
-
+ 
 A single 'fileformat' field is always required, must be the first line in the file, and details the AAVF format version number. For example, for AAVF version 1.0, this line should read:
 ```
 ##fileformat=AAVFv1.0
-```
+` ``
 #### 1.2.2 Information field format
-
+ 
 INFO fields should be described as follows (first four keys are required, source and version are recommended):
 
 ```
 ##INFO=<ID=ID,Number=number,Type=type,Description="description",Source="source",Version="version">
-```
+` ``
 
 Possible Types for INFO fields are: Integer, Float, Flag, Character, and String. The Number entry is an integer that describes the number of values that can be included with the INFO field. For example, if the INFO field contains a single number, then this value should be 1; if the INFO field describes a pair of numbers, then this value should be 2 and so on. There are also certain special characters used to define special cases:
 
@@ -48,15 +49,15 @@ Possible Types for INFO fields are: Integer, Float, Flag, Character, and String.
 The 'Flag' type indicates that the INFO field does not contain a Value entry, and hence the Number should be 0 in this case. The Description value must be surrounded by double-quotes. Double-quote character can be escaped with backslash \ and backslash as \\. Source and Version values likewise should be surrounded by double-quotes and specify the annotation source (case-insenstive, e.g. "sdrm") and exact version (e.g. "2009"), respectively for computational use.
 
 #### 1.2.3 Filter field format
-
+ 
 FILTERs that have been applied to the data should be described as follows:
 
 ```
 ##FILTER=<ID=ID,Description="description">
-```
+` ``
 
 ### 1.3 Header line syntax
-
+ 
 The header line names the 9 fixed, mandatory columns. These columns are as follows:
 
   1. #CHROM
@@ -70,7 +71,7 @@ The header line names the 9 fixed, mandatory columns. These columns are as follo
   9. INFO
 
 ### 1.4 Data lines
-
+ 
 #### 1.4.1 Fixed Line
 s
 There are 9 fixed fields per record. All data lines are tab-delimited. In all cases, missing values are specified with a dot ('.'). Fixed fields are:
@@ -88,7 +89,7 @@ There are 9 fixed fields per record. All data lines are tab-delimited. In all ca
      * AC : alternate codon, the codon that makes up the ALT amino acid(s).
      * ACC : alternate codon count (number of reads containing that codon) for each alternate codon, in the same order as listed
      * ACF : alternate codon frequency, for each alternate codon, in the same order as listed
-
+ 
 ## 2 Understanding the AAVF format
 
 AAVF records use a single general system for representing genetic variation data composed of:
@@ -97,13 +98,13 @@ AAVF records use a single general system for representing genetic variation data
   * AAVF record: a record holding all the segregating alleles at a locus
 
 AAVF records use a simple haplotype representation for REF and ALT alleles to describe variant haplotypes at a locus. ALT haplotypes are constructed from the REF haplotype by taking the REF allele amino acids at the POS in the gene within the reference genotype and replacing them with the ALT amino acids. In essence, the AAVF record specifies a-REF-t and the alternative haplotypes are a-ALT-t for each alternative allele.
-
+ 
 ## 3 Representing variation in AAVF records
-
+ 
 ### 3.1 Creating AAVF entries for Synonymous and Non-synonymous mutations
-
+ 
 #### 3.1.1 Example 1
-
+ 
 For example, suppose we are looking at a locus within the **a** gene in the **my_chrom** genome:
 
 | Example | Amino Acid Sequence | Nucleotide Sequence | Alteration                                               |
@@ -126,7 +127,7 @@ my_chrom  a       3       K      N       PASS    0.05      1000     RC=aaa;AC=aa
 
 Suppose I received the following AAVF record:
 
-```
+``` 
 #CHROM    GENE    POS     REF    ALT     FILTER  ALT_FREQ  COVERAGE INFO
 my_chrom  a       2       L      L       PASS    1.0       1000     RC=ctc;AC=ctc,ctT;ACF=0.75,0.25
 ```
@@ -143,7 +144,7 @@ This is a synonymous mutation since the alt amino acid is the same as the refere
 
 Suppose I received the following AAVF record:
 
-```
+``` 
 #CHROM    GENE    POS     REF    ALT     FILTER  ALT_FREQ  COVERAGE INFO
 my_chrom  a       4       K      I       PASS    0.75      1000     RC=aaa;AC=aTa;ACF=0.75
 ```
@@ -174,7 +175,7 @@ Representing these as AAVF records would be done as follows:
 
 Note: that the positions must be sorted in increasing order:
 
-```
+``` 
 #CHROM    GENE    POS     REF    ALT     FILTER  ALT_FREQ  COVERAGE INFO
 my_chrom  a       2       LK     L       PASS    0.5       1000     RC=ctcaaa;AC=ctc
 my_chrom  a       3       K      KK      PASS    0.5       1000     RC=aaa;AC=aaaaaa;ACF=0.5
@@ -186,7 +187,7 @@ my_chrom  a       3       K      KK      PASS    0.5       1000     RC=aaa;AC=aa
 
 Supposed I receive the following AAVF record:
 
-```
+``` 
 #CHROM    GENE    POS     REF    ALT     FILTER  ALT_FREQ  COVERAGE INFO
 my_chrom  a       3       K      KK      PASS    0.5       1000     RC=aaa;AC=aaaaaa;ACF=0.5
 ```
@@ -196,7 +197,7 @@ This is an insertion since the reference amino acid K is being replaced by K [th
 | Example | Amino Acid Sequence | Nucleotide Sequence    | Alteration                                                |
 |---------|--------------------:|-----------------------:|-----------------------------------------------------------|
 | Ref     |           g l K k s | gga ctc AAA --- aaa tcc | K is the reference amino acid                             |
-| 2       |           g l KKk s | gga ctc AAA AAA aaa tcc | K amino acid is inserted w.r.t. to the reference sequence |
+| 1       |           g l KKk s | gga ctc AAA AAA aaa tcc | K amino acid is inserted w.r.t. to the reference sequence |
 
 #### 3.4.2 Deletion AAVF record
 
