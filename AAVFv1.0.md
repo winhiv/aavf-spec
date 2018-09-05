@@ -1,10 +1,23 @@
-# The Amino Acid Variant Format (AAVF) Format Version 1.0 Specification
+---
+title: The Amino Acid Variant Format (AAVF) Format Version 1.0 Specification
+geometry: margin=.75in
+header-includes:
+  - \usepackage{listings}
+  - \lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
+include-before:
+  - |
+    \newpage
+    \setcounter{tocdepth}{3}
+    \tableofcontents
+    \newpage
+date: \today
+---
 
-## 1. The AAVF specification
+# 1. The AAVF specification
 
 AAVF is a text file format, inspired by the Variant Call Format (VCF) format. It contains meta-information lines, a header line, and then data lines each containing information about a position in a gene within a genome.
 
-### 1.1 An example
+## 1.1 An example
 ```
 ##fileformat=AAVFv1.0
 ##fileDate=20180501
@@ -24,19 +37,19 @@ hxb2    RT      212     W      G       af0.01  0.0044    1133     RC=tgg;AC=Ggg;
 hxb2    RT      248     E      K       af0.01  0.0022    1394     RC=gaa;AC=Aaa;ACF=0.0022
 ```
 
-### 1.2 Meta-information lines
- 
+## 1.2 Meta-information lines
+
 File meta-information is included after the ## string and must be key=value pairs. It is strongly encouraged that information lines describing the INFO and FILTER entries used in the body of the AAVF file be included in the meta-information section. Although they are optional, if these lines are present then they must be completely well-formed.
 
-#### 1.2.1 File format
- 
+### 1.2.1 File format
+
 A single 'fileformat' field is always required, must be the first line in the file, and details the AAVF format version number. For example, for AAVF version 1.0, this line should read:
 ```
 ##fileformat=AAVFv1.0
 ```
 
-#### 1.2.2 Information field format
- 
+### 1.2.2 Information field format
+
 INFO fields should be described as follows (first four keys are required, source and version are recommended):
 
 ```
@@ -47,18 +60,19 @@ Possible Types for INFO fields are: Integer, Float, Flag, Character, and String.
 
 The 'Flag' type indicates that the INFO field does not contain a Value entry, and hence the Number should be 0 in this case. The Description value must be surrounded by double-quotes. The double-quote character can be escaped with '\"' and the backslash character with '\\'. Source and Version values likewise should be surrounded by double-quotes and specify the annotation source (case-insenstive, e.g. "sdrm") and exact version (e.g. "2009"), respectively for computational use.
 
-#### 1.2.3 Filter field format
- 
+### 1.2.3 Filter field format
+
 FILTERs that have been applied to the data should be described as follows:
 
 ```
 ##FILTER=<ID=ID,Description="description">
 ```
 
-### 1.3 Header line syntax
- 
+## 1.3 Header line syntax
+
 The header line names the 9 fixed, mandatory columns. These columns are as follows:
-1. #CHROM
+
+1. \#CHROM
 2. GENE
 3. POS
 4. REF
@@ -68,11 +82,12 @@ The header line names the 9 fixed, mandatory columns. These columns are as follo
 8. COVERAGE
 9. INFO
 
-### 1.4 Data lines
- 
-#### 1.4.1 Fixed lines
+## 1.4 Data lines
+
+### 1.4.1 Fixed lines
 
 There are 9 fixed fields per record. All data lines are tab-delimited. In all cases, missing values are specified with a dot ('.'). Fixed fields are:
+
 1. CHROM - chromosome: An identifier from the reference genome. All entries for a specific CHROM should form a contiguous block within the AAVF file. The colon symbol (:) must be absent from all chromosome names to avoid parsing errors when dealing with breakends. (String, no white-space permitted, Required)
 2. GENE - gene: An identifier for a coding sequence within the CHROM. All entries for a specific GENE should form a contiguous block within the AAVF file. The colon symbol (:) must be absent from all chromosome names to avoid parsing errors when dealing with breakends. (String, no white-space permitted, Required)
 3. POS - position: The reference position within the gene specified, with 1st amino acid in the gene having position 1. Positions are sorted numerically, in increasing order, within each GENE sequence. It is permitted to have multiple records with the same POS. (Integer, Required)
@@ -86,21 +101,22 @@ There are 9 fixed fields per record. All data lines are tab-delimited. In all ca
     - AC: alternate codon, the codon that makes up the ALT amino acid(s).
     - ACC: alternate codon count (number of reads containing that codon) for each alternate codon, in the same order as listed
     - ACF: alternate codon frequency, for each alternate codon, in the same order as listed
- 
-## 2 Understanding the AAVF format
+
+# 2 Understanding the AAVF format
 
 AAVF records use a single general system for representing genetic variation data composed of:
+
 - Allele: representing single genetic haplotypes
 - AAVF record: a record holding all the segregating alleles at a locus
 
 AAVF records use a simple haplotype representation for REF and ALT alleles to describe variant haplotypes at a locus. ALT haplotypes are constructed from the REF haplotype by taking the REF allele amino acids at the POS in the gene within the reference genotype and replacing them with the ALT amino acids. In essence, the AAVF record specifies a-REF-t and the alternative haplotypes are a-ALT-t for each alternative allele.
- 
-## 3 Representing variation in AAVF records
- 
-### 3.1 Creating AAVF entries for Synonymous and Non-synonymous mutations
- 
-#### 3.1.1 Example 1
- 
+
+# 3 Representing variation in AAVF records
+
+## 3.1 Creating AAVF entries for Synonymous and Non-synonymous mutations
+
+### 3.1.1 Example 1
+
 For example, suppose we are looking at a locus within the **a** gene in the **my_chrom** genome:
 
 | Example | Amino Acid Sequence | Nucleotide Sequence | Alteration                                               |
@@ -117,13 +133,13 @@ my_chrom  a       3       K      K       PASS    0.95      1000     RC=aaa;AC=aa
 my_chrom  a       3       K      N       PASS    0.05      1000     RC=aaa;AC=aaT;ACF=0.05
 ```
 
-### 3.2 Decoding AAVF entries for Synonymous and Non-synonymous mutations
+## 3.2 Decoding AAVF entries for Synonymous and Non-synonymous mutations
 
-#### 3.2.1 Synonymous mutation AAVF record
+### 3.2.1 Synonymous mutation AAVF record
 
 Suppose I received the following AAVF record:
 
-``` 
+```
 #CHROM    GENE    POS     REF    ALT     FILTER  ALT_FREQ  COVERAGE INFO
 my_chrom  a       2       L      L       PASS    1.0       1000     RC=ctc;AC=ctc,ctT;ACF=0.75,0.25
 ```
@@ -136,11 +152,11 @@ This is a synonymous mutation since the alt amino acid is the same as the refere
 | 1       |           g L K k s | gga CTT aaa aaa tcc | L has a silent mutation w.r.t. to the reference sequence |
 
 
-#### 3.2.3 Non-synonymous mutation AAVF record
+### 3.2.3 Non-synonymous mutation AAVF record
 
 Suppose I received the following AAVF record:
 
-``` 
+```
 #CHROM    GENE    POS     REF    ALT     FILTER  ALT_FREQ  COVERAGE INFO
 my_chrom  a       4       K      I       PASS    0.75      1000     RC=aaa;AC=aTa;ACF=0.75
 ```
@@ -152,9 +168,9 @@ This is a non-synonymous mutation since the alt amino acid differs from the refe
 | Ref     |           g l k K s | gga ctc aaa AAA tcc | K is the reference amino acid                            |
 | 1       |           g l k I s | gga ctc aaa ATA tcc | K amino acid is a I, in a portion of the virus population|
 
-### 3.3 Creating AAVF entries for Insertions and Deletions
+## 3.3 Creating AAVF entries for Insertions and Deletions
 
-#### 3.3.1 Example 1
+### 3.3.1 Example 1
 
 For example, suppose we are looking at a locus with the **a** gene in the **my_chrom** genome:
 
@@ -165,24 +181,25 @@ For example, suppose we are looking at a locus with the **a** gene in the **my_c
 | 2       |           g l KKk s | gga ctc AAAAAA aaa tcc | K amino acid is inserted w.r.t. to the reference sequence |
 
 Representing these as AAVF records would be done as follows:
+
 1. A single amino acid deletion of K at position 3 becomes REF=LK, ALT=L
 2. A single amino acid insertion of K after position 3 becomes REF=K, ALT=KK
 
 Note: that the positions must be sorted in increasing order:
 
-``` 
+```
 #CHROM    GENE    POS     REF    ALT     FILTER  ALT_FREQ  COVERAGE INFO
 my_chrom  a       2       LK     L       PASS    0.5       1000     RC=ctcaaa;AC=ctc
 my_chrom  a       3       K      KK      PASS    0.5       1000     RC=aaa;AC=aaaaaa;ACF=0.5
 ```
 
-### 3.4 Decoding AAVF entries for Insertions and Deletions
+## 3.4 Decoding AAVF entries for Insertions and Deletions
 
-#### 3.4.1 Insertion AAVF record
+### 3.4.1 Insertion AAVF record
 
 Supposed I receive the following AAVF record:
 
-``` 
+```
 #CHROM    GENE    POS     REF    ALT     FILTER  ALT_FREQ  COVERAGE INFO
 my_chrom  a       3       K      KK      PASS    0.5       1000     RC=aaa;AC=aaaaaa;ACF=0.5
 ```
@@ -194,7 +211,7 @@ This is an insertion since the reference amino acid K is being replaced by K [th
 | Ref     |           g l K k s | gga ctc AAA --- aaa tcc | K is the reference amino acid                             |
 | 1       |           g l KKk s | gga ctc AAA AAA aaa tcc | K amino acid is inserted w.r.t. to the reference sequence |
 
-#### 3.4.2 Deletion AAVF record
+### 3.4.2 Deletion AAVF record
 
 Supposed I receive the following AAVF record:
 
